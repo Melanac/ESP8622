@@ -1,0 +1,73 @@
+cpp
+const char* ssid = "roccuzzo";
+const char* password = "roccuzzo";
+String phoneNumber = "+5492613020942";
+String apiKey = "3884939";
+String smokeDetectedMsg = "Se ha detectado humo en el sensor 1";
+
+#define SENSOR_PIN A0
+#define SPEAKER_PIN D1
+#define LED_PIN D2
+
+int smokeThreshold = 700;
+bool alarmStatus = false;
+bool messageSent = false;
+
+cpp
+void setup() {
+  Serial.begin(9600);
+  connectToWiFi();
+  Callmebot.begin();
+  pinMode(SENSOR_PIN, INPUT);
+  pinMode(SPEAKER_PIN, OUTPUT);
+  pinMode(LED_PIN, OUTPUT);
+}
+
+cpp
+void loop() {
+  if (WiFi.status() != WL_CONNECTED) {
+    connectToWiFi();
+  }
+
+  sensorValue = analogRead(SENSOR_PIN);
+  Serial.println(sensorValue);
+
+  if (sensorValue > smokeThreshold) {
+    alarmStatus = true;
+    Serial.println("Smoke detected!");
+  } else {
+    alarmStatus = false;
+    messageSent = false;
+  }
+
+  if (alarmStatus) {
+    digitalWrite(LED_PIN, HIGH);
+    tone(SPEAKER_PIN, 1000);
+
+    if (!messageSent) {
+      Callmebot.whatsappMessage(phoneNumber, apiKey, smokeDetectedMsg);
+      messageSent = true;
+    }
+  } else {
+    digitalWrite(LED_PIN, LOW);
+    noTone(SPEAKER_PIN);
+  }
+
+  delay(1000);
+}
+
+cpp
+void connectToWiFi() {
+  Serial.println("Connecting to WiFi");
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("");
+  Serial.print("Connected to WiFi network with IP Address: ");
+  Serial.println(WiFi.localIP());
+}
+
