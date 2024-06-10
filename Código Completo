@@ -2,7 +2,7 @@ cpp
 const char* ssid = "";
 const char* password = "";
 String phoneNumber = "";
-String apiKey = "3884939";
+String apiKey = "";
 String smokeDetectedMsg = "Se ha detectado humo en el sensor 1";
 
 #define SENSOR_PIN A0
